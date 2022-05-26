@@ -56,6 +56,7 @@ namespace Quoter
                 VolumeWeightedAveragePrice = 0
             };
 
+            // Intentionnaly decided not to use GetBestQuoteWithAvailableVolume for performance purpose
             foreach (var quote in orderedQuotes)
             {
                 if (remainingToExecute == 0)
