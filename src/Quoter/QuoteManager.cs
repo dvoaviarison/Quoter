@@ -5,6 +5,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Quoter
 {
+    public class QuoteManagerException : Exception
+    {
+        public QuoteManagerException(string message): base(message)
+        {}
+    }
+
     public class QuoteManager : IQuoteManager
     {
         private readonly ILogger<QuoteManager> _logger;
@@ -30,7 +36,7 @@ namespace Quoter
 
         public ITradeResult ExecuteTrade(string symbol, uint volumeRequested)
         {
-            _logger.LogInformation("Starting Execution of trade {Symbol}: {VolumeRequested}", symbol, volumeRequested);
+            _logger.LogInformation("Starting Execution of - Symbol: {Symbol} | VolumeRequested: {VolumeRequested}", symbol, volumeRequested);
 
             var orderedQuotes = GetOrderedQuotes(symbol);
 
