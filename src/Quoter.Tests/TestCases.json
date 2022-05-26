@@ -1,0 +1,35 @@
+﻿// =====================================================================
+//         SWAGGER TEST DATA SAMPLE - ADDITIONAL TO UNIT TESTS
+// =====================================================================
+
+// SCENARIO 1: EXAMPLE SENT BY DANIEL
+// =====================================================================
+[ // HTTP-POST QuoteManager/AddOrUpdateQuote
+  [
+    {
+      "id": "1fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "symbol": "SEC1",
+      "price": 1,
+      "availableVolume": 1000,
+      "expirationDate": "2022-10-28T17:55:34.782Z"
+    },
+    {
+      "id": "2fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "symbol": "SEC1",
+      "price": 2,
+      "availableVolume": 1000,
+      "expirationDate": "2022-10-28T17:55:34.782Z"
+    }
+  ],
+  // HTP-POST QuoteManager/ExecuteTrade
+  [
+    {
+      "symbol": "SEC1",
+      "requestedVolume": 750
+    }, // => availableVolume[1] = 250 | availableVolume[2] = 1000
+    {
+      "symbol": "SEC1",
+      "requestedVolume": 500
+    } // => availableVolume[1] = 0 | availableVolume[2] = 750
+  ]
+]
