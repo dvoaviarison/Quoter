@@ -10,6 +10,7 @@ namespace Quoter.Tests
     {
         [Theory]
         [InlineData("SEC1", 1500, 1500, (double)2000 / 1500, 0, 1500)]
+        [InlineData("SEC1", 3000, 3000, (double)5000 / 3000, 0, 0)]
         [InlineData("SEC1", 3500, 3000, (double)5000 / 3000, 0, 0)]
         [InlineData("SEC2", 3500, 0, 0, 1000, 2000)]
         public void CanExecuteTrade(

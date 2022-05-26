@@ -30,10 +30,6 @@
     <None Remove="Serilog.Sinks.File" />
     <None Remove="Serilog.Settings.Configuration" />
     <None Remove="Serilog.Extensions.Hosting" />
-    <None Remove="Logs\" />
     <None Remove="Serilog.Sinks.Console" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Logs\" />
   </ItemGroup>
 </Project>
