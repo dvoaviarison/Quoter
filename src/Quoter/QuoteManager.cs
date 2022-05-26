@@ -28,8 +28,12 @@ namespace Quoter
             quotes.AddOrUpdate(quote.Id, quote, (id, oldQuote) => quote); 
         }
 
-        // I would have added this as part of a separate Execution Manager
-        // which would have access to the QuoteManager/QuoteRepository
+        // Thoughts:
+        // I would have added this as part of a separate IExecutionManager which will access
+        // quote data via either a IQuoteManager or IQuoteRepository.
+        // The main idea here is to separate concerns
+        // Additionally, in the same spirit, IExecutionManager will save/access
+        // execution related data via IExecutionRepository
         public ITradeResult ExecuteTrade(string symbol, uint volumeRequested)
         {
             _logger.LogInformation("Starting Execution of - Symbol: {Symbol} | VolumeRequested: {VolumeRequested}", symbol, volumeRequested);
