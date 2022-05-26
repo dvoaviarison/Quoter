@@ -10,7 +10,7 @@
       "id": "1fa85f64-5717-4562-b3fc-2c963f66afa6",
       "symbol": "SEC1",
       "price": 1,
-      "availableVolume": 1000,
+      "availableVolume": 750,
       "expirationDate": "2022-10-28T17:55:34.782Z"
     },
     {
@@ -25,7 +25,7 @@
   [
     {
       "symbol": "SEC1",
-      "requestedVolume": 750
+      "requestedVolume": 500
     }, // => availableVolume[1] = 250 | availableVolume[2] = 1000
     {
       "symbol": "SEC1",
