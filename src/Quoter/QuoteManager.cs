@@ -43,7 +43,7 @@ namespace Quoter
                 return null;
             }
 
-            // Make trades best quotes first
+            // Make trades, best quotes first
             var weightSum = 0d;
             var weightedValueSum = 0d;
             var remainingToExecute = volumeRequested;
