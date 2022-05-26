@@ -9,6 +9,49 @@ namespace Quoter.Tests
     public class QuoteManagerTests
     {
         [Theory]
+        [InlineData("SEC1", 1500, 1500, (double)2000 / 1500, 0, 1500)]
+        [InlineData("SEC1", 3500, 3000, (double)5000 / 3000, 0, 0)]
+        [InlineData("SEC2", 3500, 0, 0, 1000, 2000)]
+        public void CanExecuteTrade(
+            string symbol,
+            uint requestedVolume,
+            uint expectedVolumeExecuted,
+            double expectedAvgPrice,
+            uint quote1RemainingVolume,
+            uint quote2RemainingVolume)
+        {
+            // GIVEN
+            var mgr = new QuoteManager(new NullLogger<QuoteManager>());
+            var quote1 = new Quote
+            {
+                Id = Guid.NewGuid(),
+                Symbol = "SEC1",
+                Price = 1,
+                AvailableVolume = 1000,
+                ExpirationDate = DateTime.Now.AddDays(2)
+            };
+            var quote2 = new Quote
+            {
+                Id = Guid.NewGuid(),
+                Symbol = "SEC1",
+                Price = 2,
+                AvailableVolume = 2000,
+                ExpirationDate = DateTime.Now.AddDays(2)
+            };
+            mgr.QuotesBySymbol[quote1.Symbol] = new ConcurrentDictionary<Guid, IQuote> { [quote1.Id] = quote1 };
+            mgr.QuotesBySymbol[quote2.Symbol].TryAdd(quote2.Id, quote2);
+
+            // WHEN
+            var res = mgr.ExecuteTrade(symbol, requestedVolume);
+
+            // THEN
+            Assert.Equal(expectedVolumeExecuted, res?.VolumeExecuted ?? 0);
+            Assert.Equal(expectedAvgPrice, res?.VolumeWeightedAveragePrice ?? 0);
+            Assert.Equal(quote1RemainingVolume, mgr.QuotesBySymbol[quote1.Symbol][quote1.Id].AvailableVolume);
+            Assert.Equal(quote2RemainingVolume, mgr.QuotesBySymbol[quote2.Symbol][quote2.Id].AvailableVolume);
+        }
+
+        [Theory]
         [InlineData("SEC1", 10, 0, false, 20, 2000, false, 20)]
         [InlineData("SEC1", 10, 1000, true, 20, 2000, false, 20)]
         [InlineData("SEC1", 10, 1000, false, 20, 2000, false, 10)]
@@ -51,49 +94,6 @@ namespace Quoter.Tests
 
             // THEN
             Assert.Equal(expectedBestPrice, bestQuote?.Price);
-        }
-
-        [Theory]
-        [InlineData("SEC1", 1500, 1500, (double)2000/1500, 0, 1500)]
-        [InlineData("SEC1", 3500, 3000, (double)5000/3000, 0, 0)]
-        [InlineData("SEC2", 3500, 0, 0, 1000, 2000)]
-        public void CanExecuteTrade(
-            string symbol,
-            uint requestedVolume,
-            uint expectedVolumeExecuted,
-            double expectedAvgPrice,
-            uint quote1RemainingVolume,
-            uint quote2RemainingVolume)
-        {
-            // GIVEN
-            var mgr = new QuoteManager(new NullLogger<QuoteManager>());
-            var quote1 = new Quote
-            {
-                Id = Guid.NewGuid(),
-                Symbol = "SEC1",
-                Price = 1,
-                AvailableVolume = 1000,
-                ExpirationDate = DateTime.Now.AddDays(2)
-            };
-            var quote2 = new Quote
-            {
-                Id = Guid.NewGuid(),
-                Symbol = "SEC1",
-                Price = 2,
-                AvailableVolume = 2000,
-                ExpirationDate = DateTime.Now.AddDays(2)
-            };
-            mgr.QuotesBySymbol[quote1.Symbol] = new ConcurrentDictionary<Guid, IQuote> { [quote1.Id] = quote1 };
-            mgr.QuotesBySymbol[quote2.Symbol].TryAdd(quote2.Id, quote2);
-
-            // WHEN
-            var res = mgr.ExecuteTrade(symbol, requestedVolume);
-
-            // THEN
-            Assert.Equal(expectedVolumeExecuted, res?.VolumeExecuted ?? 0);
-            Assert.Equal(expectedAvgPrice, res?.VolumeWeightedAveragePrice ?? 0);
-            Assert.Equal(quote1RemainingVolume, mgr.QuotesBySymbol[quote1.Symbol][quote1.Id].AvailableVolume);
-            Assert.Equal(quote2RemainingVolume, mgr.QuotesBySymbol[quote2.Symbol][quote2.Id].AvailableVolume);
         }
 
         [Fact]

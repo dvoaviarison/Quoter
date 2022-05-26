@@ -5,12 +5,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Quoter
 {
-    public class QuoteManagerException : Exception
-    {
-        public QuoteManagerException(string message): base(message)
-        {}
-    }
-
     public class QuoteManager : IQuoteManager
     {
         private readonly ILogger<QuoteManager> _logger;
@@ -34,6 +28,8 @@ namespace Quoter
             quotes.AddOrUpdate(quote.Id, quote, (id, oldQuote) => quote); 
         }
 
+        // I would have added this as part of a separate Execution Manager
+        // which would have access to the QuoteManager/QuoteRepository
         public ITradeResult ExecuteTrade(string symbol, uint volumeRequested)
         {
             _logger.LogInformation("Starting Execution of - Symbol: {Symbol} | VolumeRequested: {VolumeRequested}", symbol, volumeRequested);
