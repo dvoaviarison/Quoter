@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 
 namespace Quoter
@@ -21,31 +22,84 @@ namespace Quoter
             if (!QuotesBySymbol.TryGetValue(quote.Symbol, out quotes))
             {
                 quotes = new ConcurrentDictionary<Guid, IQuote>();
-                QuotesBySymbol[quote.Symbol] = quotes;
+                QuotesBySymbol.TryAdd(quote.Symbol, quotes);
             }
 
-            quotes.AddOrUpdate(quote.Id, quote, (id, oldQuote) => quote);
+            quotes.AddOrUpdate(quote.Id, quote, (id, oldQuote) => quote); 
         }
 
         public ITradeResult ExecuteTrade(string symbol, uint volumeRequested)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Starting Execution of trade {Symbol}: {VolumeRequested}", symbol, volumeRequested);
+
+            var orderedQuotes = GetOrderedQuotes(symbol);
+
+            // If no quotes then no trades
+            if (orderedQuotes == null || !orderedQuotes.Any())
+            {
+                _logger.LogInformation("No quotes found for trade {Symbol}", symbol);
+                return null;
+            }
+
+            // Make trades best quotes first
+            var weightSum = 0d;
+            var weightedValueSum = 0d;
+            var remainingToExecute = volumeRequested;
+            var trade = new TradeResult
+            {
+                Id = Guid.NewGuid(),
+                Symbol = symbol,
+                VolumeExecuted = 0,
+                VolumeRequested = volumeRequested,
+                VolumeWeightedAveragePrice = 0
+            };
+
+            foreach (var quote in orderedQuotes)
+            {
+                if (remainingToExecute == 0)
+                {
+                    break;
+                }
+
+                var volumeToExecute = remainingToExecute >= quote.AvailableVolume
+                        ? quote.AvailableVolume
+                        : remainingToExecute;
+                trade.VolumeExecuted += volumeToExecute;
+                quote.AvailableVolume -= volumeToExecute;
+                remainingToExecute -= volumeToExecute;
+
+                weightSum += volumeToExecute;
+                weightedValueSum += quote.Price * volumeToExecute;
+
+                _logger.LogInformation("Executed Symbol: {Symbol} | Volume: {Volume} | Price: {Price}",
+                    symbol,
+                    volumeToExecute,
+                    quote.Price);
+            }
+
+            trade.VolumeWeightedAveragePrice = weightedValueSum / weightSum;
+
+            _logger.LogInformation("Completed Execution of {@Trade}", trade);
+
+            return trade;
         }
 
         public IQuote GetBestQuoteWithAvailableVolume(string symbol)
         {
-            throw new NotImplementedException();
+            var bestQuote = GetOrderedQuotes(symbol)?
+                .FirstOrDefault();
+
+            return bestQuote;
         }
 
         public void RemoveAllQuotes(string symbol)
         {
-            // Catch if something goes wrong here
-            QuotesBySymbol.TryRemove(symbol, out var _);
+            QuotesBySymbol.TryRemove(symbol, out var _); // O(1)
         }
 
         public void RemoveQuote(Guid id)
         {
-            foreach (var quotes in QuotesBySymbol.Values)
+            foreach (var quotes in QuotesBySymbol.Values) // O(n)
             {
                 if (quotes.TryGetValue(id, out var _))
                 {
@@ -53,6 +107,17 @@ namespace Quoter
                     return;
                 }
             }
+        }
+
+        private IOrderedEnumerable<IQuote> GetOrderedQuotes(string symbol)
+        {
+            QuotesBySymbol.TryGetValue(symbol, out var quotes);
+            var orderedQuotes = quotes?.Values?
+                .Where(quote => quote.AvailableVolume > 0 &&
+                                quote.ExpirationDate > DateTime.Now)? // O(n)
+                .OrderBy(quote => quote.Price); // O(log(n))
+
+            return orderedQuotes;
         }
     }
 }

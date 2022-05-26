@@ -28,13 +28,33 @@ namespace Quoter.Host.Controllers
 
                 var res = _quoteManager.ExecuteTrade(symbol, volumeRequested);
 
-                _logger.LogInformation("[End] ExecuteTrade completed successfully");
+                _logger.LogInformation("[END] ExecuteTrade completed successfully");
 
                 return Ok(res);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "[END] ExecuteTrade failed. {ExceptionMessage}", e.Message);
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("GetBestQuoteWithAvailableVolume")]
+        public ActionResult<Quote> GetBestQuoteWithAvailableVolume(string symbol)
+        {
+            try
+            {
+                _logger.LogInformation("[BEGIN] Calling GetBestQuoteWithAvailableVolume");
+
+                var res = _quoteManager.GetBestQuoteWithAvailableVolume(symbol);
+
+                _logger.LogInformation("[END] GetBestQuoteWithAvailableVolume completed successfully");
+
+                return Ok(res);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "[END] GetBestQuoteWithAvailableVolume failed. {ExceptionMessage}", e.Message);
                 return BadRequest(e.Message);
             }
         }
@@ -48,7 +68,7 @@ namespace Quoter.Host.Controllers
 
                 _quoteManager.AddOrUpdateQuote(quote);
 
-                _logger.LogInformation("[End] AddOrUpdateQuote completed successfully");
+                _logger.LogInformation("[END] AddOrUpdateQuote completed successfully");
 
                 return Ok();
             }
@@ -68,7 +88,7 @@ namespace Quoter.Host.Controllers
 
                 _quoteManager.RemoveAllQuotes(symbol);
 
-                _logger.LogInformation("[End] RemoveAllQuotes completed successfully");
+                _logger.LogInformation("[END] RemoveAllQuotes completed successfully");
 
                 return Ok();
             }
@@ -88,7 +108,7 @@ namespace Quoter.Host.Controllers
 
                 _quoteManager.RemoveQuote(id);
 
-                _logger.LogInformation("[End] RemoveQuote completed successfully");
+                _logger.LogInformation("[END] RemoveQuote completed successfully");
 
                 return Ok();
             }
