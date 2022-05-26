@@ -63,9 +63,7 @@ namespace Quoter
                     break;
                 }
 
-                var volumeToExecute = remainingToExecute >= quote.AvailableVolume
-                        ? quote.AvailableVolume
-                        : remainingToExecute;
+                var volumeToExecute = remainingToExecute >= quote.AvailableVolume ? quote.AvailableVolume : remainingToExecute;
                 trade.VolumeExecuted += volumeToExecute;
                 quote.AvailableVolume -= volumeToExecute;
                 remainingToExecute -= volumeToExecute;
