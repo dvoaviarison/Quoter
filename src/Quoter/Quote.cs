@@ -2,7 +2,7 @@
 
 namespace Quoter
 {
-    class Quote : IQuote
+    public class Quote : IQuote
     {
         public Guid Id { get; set; }
         public string Symbol { get; set; }

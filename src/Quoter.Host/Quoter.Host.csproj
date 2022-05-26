@@ -8,7 +8,7 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'SimpleReact' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Swagger' " />
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
     <PackageReference Include="Serilog" Version="2.11.0" />

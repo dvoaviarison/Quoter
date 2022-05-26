@@ -40,7 +40,7 @@ namespace Quoter.Host.Controllers
         }
 
         [HttpPost("AddOrUpdateQuote")]
-        public IActionResult AddOrUpdateQuote([FromBody] IQuote quote)
+        public IActionResult AddOrUpdateQuote([FromBody] Quote quote)
         {
             try
             {
