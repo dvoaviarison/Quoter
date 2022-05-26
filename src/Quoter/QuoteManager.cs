@@ -39,12 +39,20 @@ namespace Quoter
 
         public void RemoveAllQuotes(string symbol)
         {
-            throw new NotImplementedException();
+            // Catch if something goes wrong here
+            QuotesBySymbol.TryRemove(symbol, out var _);
         }
 
         public void RemoveQuote(Guid id)
         {
-            throw new NotImplementedException();
+            foreach (var quotes in QuotesBySymbol.Values)
+            {
+                if (quotes.TryGetValue(id, out var _))
+                {
+                    quotes.TryRemove(id, out var _);
+                    return;
+                }
+            }
         }
     }
 }

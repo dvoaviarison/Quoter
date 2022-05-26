@@ -58,6 +58,46 @@ namespace Quoter.Host.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpPost("RemoveAllQuotes")]
+        public IActionResult RemoveAllQuotes(string symbol)
+        {
+            try
+            {
+                _logger.LogInformation("[BEGIN] Calling RemoveAllQuotes");
+
+                _quoteManager.RemoveAllQuotes(symbol);
+
+                _logger.LogInformation("[End] RemoveAllQuotes completed successfully");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "[END] RemoveAllQuotes failed. {ExceptionMessage}", e.Message);
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("RemoveQuote")]
+        public IActionResult RemoveQuote(Guid id)
+        {
+            try
+            {
+                _logger.LogInformation("[BEGIN] Calling RemoveQuote");
+
+                _quoteManager.RemoveQuote(id);
+
+                _logger.LogInformation("[End] RemoveQuote completed successfully");
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "[END] RemoveQuote failed. {ExceptionMessage}", e.Message);
+                return BadRequest(e.Message);
+            }
+        }
     }
 }
 
