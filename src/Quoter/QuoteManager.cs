@@ -82,7 +82,9 @@ namespace Quoter
                     quote.Price);
             }
 
-            trade.VolumeWeightedAveragePrice = weightedValueSum / weightSum;
+            trade.VolumeWeightedAveragePrice = weightSum == 0
+                ? 0 // Avoid div by 0: We can either throw a meaningful exception or just do this
+                : weightedValueSum / weightSum;
 
             _logger.LogInformation("Completed Execution of {@Trade}", trade);
 
